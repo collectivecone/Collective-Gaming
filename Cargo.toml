@@ -1,0 +1,12 @@
+[package]
+name = "SecondAttempt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tungstenite = "0.24.0"
+captrs = "0.3.1"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] } 
+enigo = "0.2.1"
+lazy_static = "1.5.0"
