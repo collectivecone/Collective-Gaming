@@ -5,6 +5,8 @@ use std::time::Instant;
 use std::ops::DerefMut;
 use crate::networking::websockets;
 
+use crate::settings::GLOBAL_SETTINGS;
+
 use captrs::Capturer;
 
 pub mod reader;
@@ -43,8 +45,9 @@ pub fn monitor_scanner() {
            }
            let after = Instant::now();
            let time_taken_for_read_frame = after.duration_since(before);
+
            sleep(
-              Duration::from_secs_f32(1f32/ crate::settings::FPS).saturating_sub(time_taken_for_read_frame)
+              Duration::from_secs_f32(1f32 / (GLOBAL_SETTINGS.read().unwrap().fps)  ).saturating_sub(time_taken_for_read_frame)
            );
 
         }

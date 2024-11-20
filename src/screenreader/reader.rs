@@ -1,7 +1,8 @@
 use captrs::Capturer;
+use crate::settings::GLOBAL_SETTINGS;
 
 pub fn makebase() -> Vec<u8> {
-   let (xsize, ysize) = crate::settings::SCREEN_SIZE;
+   let (xsize, ysize) = (GLOBAL_SETTINGS.read().unwrap()).screen_size ;
    let mut bytes: Vec<u8> = Vec::new();
 
    bytes.push((xsize / 256) as u8);
@@ -21,7 +22,7 @@ pub fn makebase() -> Vec<u8> {
 }
 
 pub fn getmonitordata(capture:&mut Capturer) -> Option<Vec<u8>> {
-    let (xsize, ysize) = crate::settings::SCREEN_SIZE;
+    let (xsize, ysize) = (GLOBAL_SETTINGS.read().unwrap()).screen_size;
    
    
     let result = capture.capture_store_frame();

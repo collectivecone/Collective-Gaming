@@ -5,6 +5,8 @@ use std::net::TcpStream;
 use std::ops::Deref;
 use serde_json::{self};
 
+use crate::settings::GLOBAL_SETTINGS;
+
 use super::User;
 use super::WebsocketDataTypes;
 use super::USERS;
@@ -12,7 +14,7 @@ use super::STAND_WEB_CONFIG;
 
 fn initalise_data(websocket: &mut tungstenite::WebSocket<TcpStream>) {
     let json = serde_json::json!({
-        "Keys" : crate::settings::KEYS,
+        "Keys" : (GLOBAL_SETTINGS.read().unwrap()).keys.clone(),
     });
 
     let string = json.to_string();
@@ -49,7 +51,7 @@ fn get_ip(headers: &HashMap<String,String>, stream : &TcpStream) -> Option<Strin
 }
 
 fn is_multi_connecting(user_vec: &Vec<User>, ip_string: &String) -> bool {
-    if crate::settings::IGNORE_MULTIPLE_CONNECTIONS_PER_IP {return false}
+    if GLOBAL_SETTINGS.read().unwrap().ignore_multiple_connections_per_ip {return false}
 
     for user in user_vec {
         if user.true_ip == *ip_string {

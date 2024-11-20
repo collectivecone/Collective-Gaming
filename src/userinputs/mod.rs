@@ -1,19 +1,20 @@
-
 use std::thread::{spawn,sleep};
 use std::time::Duration;
 use enigo::{self, Direction, Keyboard};
 use std::ops::Deref;
 
-use crate::settings::RATIO_FOR_PRESS;
+use crate::settings::GLOBAL_SETTINGS;
 use crate::networking::websockets;
 use crate::networking::websockets::User;
 
 fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Vec<(String,f64)>) {
     let total_users = users.len() as f64;
 
-    let valid_keys = crate::settings::KEYS.clone();
-    let mut amounts: Vec<f64> = vec!(); for _ in valid_keys.clone() {amounts.push(0f64);}
+    let settings = GLOBAL_SETTINGS.read().unwrap();
+    let (valid_keys,ratio_for_press) = ((*settings).keys.clone(),(*settings).ratio_for_press);
+    drop(settings);
 
+    let mut amounts: Vec<f64> = vec!(); for _ in valid_keys.clone() {amounts.push(0f64);}
     for user in users {
         for command in user.commands.iter() {
             for (i, entry) in valid_keys.clone() .iter().enumerate()  {
@@ -29,7 +30,7 @@ fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Ve
 
     for (i,amount) in amounts.iter().enumerate() {
         let key = valid_keys[i] ;
-        keys_pressing.push((String::from(key), amount / total_users >= RATIO_FOR_PRESS ));
+        keys_pressing.push((String::from(key), amount / total_users >= ratio_for_press ));
         keys_ratios.push((String::from(key), amount / total_users ));
 
     }
@@ -53,7 +54,10 @@ fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_in
     }
 }
 
-fn send_keybaord_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>) {
+fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>) {
+    let settings = GLOBAL_SETTINGS.read().unwrap();
+    let ratio_for_press = (*settings).ratio_for_press;
+    drop(settings);
 
     let mut bit_array: Vec<u8> = vec![];
     bit_array.push(((user_count / (256 * 256 * 256)) % 256) as u8) ;
@@ -62,10 +66,10 @@ fn send_keybaord_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>)
     bit_array.push((user_count % 256) as u8);
 
     for (_,i) in key_ratios {
-        if i < crate::settings::RATIO_FOR_PRESS {
-            bit_array.push(((i / RATIO_FOR_PRESS)  * 128f64) as u8);
+        if i < ratio_for_press {
+            bit_array.push(((i / ratio_for_press)  * 128f64) as u8);
         } else {
-            bit_array.push(((((i - RATIO_FOR_PRESS) / (1f64 - RATIO_FOR_PRESS))  * 127f64) as u8) + 128u8);
+            bit_array.push(((((i - ratio_for_press) / (1f64 - ratio_for_press))  * 127f64) as u8) + 128u8);
         }
     }
 
@@ -76,7 +80,9 @@ fn send_keybaord_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>)
 pub fn check_inputs() {
     spawn (|| {
         let mut controller = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
-        let mut previous: Vec<(String,bool)> = vec!(); for entry in crate::settings::KEYS.iter()  {previous.push((String::from(*entry),false)); }
+        let settings = GLOBAL_SETTINGS.read().unwrap();
+        let mut previous: Vec<(String,bool)> = vec!(); for entry in ((*settings).keys).iter()  {previous.push((String::from(*entry),false)); }
+        drop(settings);
         loop {
             let users_global = super::networking::websockets::update_websockets_and_get_users();
             let guard = users_global.lock().unwrap();
@@ -87,12 +93,15 @@ pub fn check_inputs() {
                 let (commands,key_ratios,) = user_inputs_into_keyboard_inputs(user_vec);
                 drop(guard);
                 set_keyboard_inputs(&commands,previous,&mut controller);
-                send_keybaord_data_to_client(user_count,key_ratios);
+                send_keyboard_data_to_client(user_count,key_ratios);
                
                 previous = commands;
             }
 
-            sleep(Duration::from_secs_f64(1f64 / crate::settings::KEYBOARD_UPDATE_RATE));
+            let settings = GLOBAL_SETTINGS.read().unwrap();
+            let keyboard_update_rate = (*settings).keyboard_update_rate;
+            drop(settings);
+            sleep(Duration::from_secs_f64(1f64 / keyboard_update_rate));
         }
     });
 }
