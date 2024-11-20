@@ -9,6 +9,7 @@ dependencies = [
  "captrs",
  "enigo",
  "lazy_static",
+ "prompted",
  "serde",
  "serde_json",
  "tungstenite",
@@ -343,6 +344,12 @@ checksum = "f139b0662de085916d1fb67d2b4169d1addddda1919e696f3252b740b629986e"
 dependencies = [
  "unicode-ident",
 ]
+
+[[package]]
+name = "prompted"
+version = "0.2.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d34cf5bf48e2fe6e11fb6b619fb5962530f1eaf278709de5f8ea49afa7379f9b"
 
 [[package]]
 name = "quote"

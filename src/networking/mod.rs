@@ -10,7 +10,7 @@ pub fn http_handler() {
    spawn (|| {
       
     
-      let listener = if (GLOBAL_SETTINGS.read().unwrap()).local_server 
+      let listener = if !(GLOBAL_SETTINGS.read().unwrap()).local_server 
             {TcpListener::bind("0.0.0.0:80").unwrap()}
       else  {TcpListener::bind("127.0.0.1:80").unwrap()};
       for stream in listener.incoming() { 

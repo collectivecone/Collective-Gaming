@@ -24,7 +24,7 @@ pub fn handle_connection(mut stream: TcpStream) {
         if request.http_type == HttpTypes::Get {
 
            let status_line = "HTTP/1.1 200 OK";
-           let contents = std::fs::read_to_string("websites/Test.html").unwrap();
+           let contents = std::fs::read_to_string("websites/Main.html").unwrap();
            let length = contents.len();
          
            let response =

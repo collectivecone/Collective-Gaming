@@ -29,9 +29,9 @@ fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Ve
     let mut keys_ratios: Vec<(String,f64)> = vec!();
 
     for (i,amount) in amounts.iter().enumerate() {
-        let key = valid_keys[i] ;
-        keys_pressing.push((String::from(key), amount / total_users >= ratio_for_press ));
-        keys_ratios.push((String::from(key), amount / total_users ));
+        let key = valid_keys[i].clone() ;
+        keys_pressing.push((key.clone(), amount / total_users >= ratio_for_press ));
+        keys_ratios.push((key.clone(), amount / total_users ));
 
     }
 
@@ -48,9 +48,16 @@ fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_in
         if *bool {command_type = Direction::Press} 
         else {command_type = Direction::Release}
        
-        let char = key.to_lowercase().as_str().chars().next().unwrap();
+        if key == "Space" {
+         _ = controller.key(enigo::Key::Unicode(' '), command_type);
+        } else {
 
-        _ = controller.key(enigo::Key::Unicode(char), command_type);
+            let char = key.to_lowercase().as_str().chars().next().unwrap();
+
+            _ = controller.key(enigo::Key::Unicode(char), command_type);
+        }
+
+       
     }
 }
 
@@ -81,7 +88,7 @@ pub fn check_inputs() {
     spawn (|| {
         let mut controller = enigo::Enigo::new(&enigo::Settings::default()).unwrap();
         let settings = GLOBAL_SETTINGS.read().unwrap();
-        let mut previous: Vec<(String,bool)> = vec!(); for entry in ((*settings).keys).iter()  {previous.push((String::from(*entry),false)); }
+        let mut previous: Vec<(String,bool)> = vec!(); for entry in ((*settings).keys).iter()  {previous.push((entry.clone(),false)); }
         drop(settings);
         loop {
             let users_global = super::networking::websockets::update_websockets_and_get_users();

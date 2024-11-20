@@ -1,5 +1,6 @@
 use std::thread;
 use std::time;
+use prompted::input;
 
 mod networking;
 mod screenreader;
@@ -20,10 +21,10 @@ pub mod settings{
         screen_size: (300,168),
 
         ignore_multiple_connections_per_ip: false,
-        local_server: true,
+        local_server: false,
     } );
     pub struct SettingsStruct {
-        pub keys: Vec<&'static str>,
+        pub keys: Vec<String>,
         pub fps: f32,
         pub keyboard_update_rate: f64,
 
@@ -36,14 +37,63 @@ pub mod settings{
     }
 }
 
+fn setup() {
 
+    let mut settings_guard = settings::GLOBAL_SETTINGS.write();
+    let settings = (settings_guard.as_deref_mut()).unwrap();
+    
+    println!("Input a key you want to be pressable, enter nothing to break loop");
+    println!("A Space is represented by the word 'Space' ");
+    loop {
+        let key = input!("");
+        let trim: String  = key.clone();
+
+        if key.trim() == "" { break;};
+        settings.keys.push(trim);
+    }
+
+
+
+    if let Ok(x) = input!("x screen size").parse() {
+        if let Ok(y) = input!("y screen size").parse() {
+            settings.screen_size = (x,y);
+        }
+    } else {println!("default set")}
+
+
+    if let Ok(fps) = input!("fps").parse() { 
+        settings.fps = fps;
+    }
+
+    if let Ok(ratio_for_press) = input!("ratio for press").parse() { 
+        settings.ratio_for_press = ratio_for_press;
+    }
+
+    if let Ok(keyboard_update_rate) = input!("keyboard update rate").parse() {
+        settings.keyboard_update_rate = keyboard_update_rate
+    }
+
+    if input!("is local server (Y/N)") == "Y" {
+        settings.local_server = true;
+    }
+
+    if input!("ignore multiple connections per ip (Y/N)") == "Y" {
+        settings.ignore_multiple_connections_per_ip = true;
+    }
+    drop(settings_guard);
+}
 
 fn main() {
+
+    setup();
+
     screenreader::monitor_scanner();
     networking::http_handler();
     userinputs::check_inputs();
 
+    println!("set up done, server now running");
+
     loop {
-        thread::sleep(time::Duration::from_secs(100)); // temp so the main doesn't die.
+        thread::sleep(time::Duration::from_secs(100)); // temp so the main doesn't die. Will be replaced by an editable on the fly settings thing later
     }
 }
