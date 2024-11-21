@@ -13,13 +13,13 @@ fn register_user_controls(user: &mut User, dict: serde_json::Map<String,Value>) 
     if let Some(value) = dict.get("Key") {
         if let Value::String(str) = value {
             key = str;
-        } else {return}
+        } else {return;}
     } else {return;}
 
     if let Some(value) = dict.get("Pressing") {
         if let Value::Bool(bool) = value {
            is_pressing = bool;
-        } else {return}
+        } else {return;}
     } else {return;}
 
     let mut already_holding = false;

@@ -118,8 +118,5 @@ fn main() {
         if keys.contains(&Keycode.Semicolon) {
             setup();
         }
-
-
-
     }
 }

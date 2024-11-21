@@ -78,6 +78,7 @@ pub fn add_new_user(stream: TcpStream,headers: HashMap<String,String>) {
                 websocket: websocket,
                 commands: Vec::new(),
                 true_ip: ip_string,
+                mouse_position: None,
             };
             guard.push(user);
         }

@@ -97,16 +97,24 @@
         canvas = document.getElementById("canvas");
   			frameCount = 0
         previous_screen_bytes = new Uint8ClampedArray();
+        mouseX = 0
+        mouseY = 0
   
   			window.onload = function() {
-        	//updateScreen()
-       // 	setInterval(updateScreen, 10)
           WebSockets()
         }
         const sleep = ms => new Promise(r => setTimeout(r, ms));
 
         function sendKeyInput(key,pressing) {
           let json = `{"Invoke_Type": "Control", "Key": "${key}", "Pressing": ${pressing}}`;
+          socket.send(json);
+        }
+
+        function sendMouseInput(event) {
+          let mousex = event.pageX - document.getElementById("canvas").getBoundingClientRect().x;
+
+          let mousey = event.pageY - document.getElementById("canvas").getBoundingClientRect().y;
+          let json = `{"Invoke_Type": "Mouse", X: "${mousex}", Y: "${mousey}" }`;
           socket.send(json);
         }
 
@@ -190,6 +198,8 @@
             }
           }
         }
+
+        document.onmousemove = sendMouseInput
 
 
         async function WebSockets() {
@@ -313,8 +323,6 @@
             }
           }
           arr = previous_screen_bytes
-            
-         // console.log(arr,bytes);
 
           return [arr, xsize, ysize]
         }
