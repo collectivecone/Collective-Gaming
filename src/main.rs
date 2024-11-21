@@ -26,6 +26,8 @@ pub mod settings{
 
         ignore_multiple_connections_per_ip: false,
         local_server: false,
+
+        keyboard_input_enabled: true,
     } );
     pub struct SettingsStruct {
         pub keys: Vec<String>,
@@ -37,7 +39,9 @@ pub mod settings{
         pub screen_size: (u32,u32),
 
         pub ignore_multiple_connections_per_ip: bool,
-        pub local_server: bool
+        pub local_server: bool,
+
+        pub keyboard_input_enabled: bool
     }
 }
 
@@ -97,14 +101,22 @@ fn main() {
 
     println!("set up done, server now running");
     println!("hit \\ to emergency stop the program");
+    println!("hit , and . to toggle between input being off or on");
+    println!("hit ; to toggle between input being off or on");
 
     loop {
         thread::sleep(time::Duration::from_millis(100));
         let device_state = DeviceState::new();
-        if device_state.get_keys().contains(&Keycode.BackSlash) {
-            break
-
-
+        let keys = device_state.get_keys(); 
+        if keys.contains(&Keycode.BackSlash) {break}
+        if keys.contains(&Keycode.Comma) {
+            settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().keyboard_input_enabled = false;
+        } 
+        if keys.contains(&Keycode.Dot) {
+            settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().keyboard_input_enabled = true;
+        }
+        if keys.contains(&Keycode.Semicolon) {
+            setup();
         }
 
 

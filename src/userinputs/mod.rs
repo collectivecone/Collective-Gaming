@@ -99,11 +99,13 @@ pub fn check_inputs() {
             if user_count > 0 {
                 let (commands,key_ratios,) = user_inputs_into_keyboard_inputs(user_vec);
                 drop(guard);
-                set_keyboard_inputs(&commands,previous,&mut controller);
+                if (*GLOBAL_SETTINGS.read().unwrap()).keyboard_input_enabled {
+                    set_keyboard_inputs(&commands,previous,&mut controller);
+                }
                 send_keyboard_data_to_client(user_count,key_ratios);
                
                 previous = commands;
-            }
+            } else {drop(guard);}
 
             sleep(Duration::from_secs_f64(1f64 / (*GLOBAL_SETTINGS.read().unwrap()).keyboard_update_rate ));
         }
