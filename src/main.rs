@@ -108,14 +108,14 @@ fn main() {
         thread::sleep(time::Duration::from_millis(100));
         let device_state = DeviceState::new();
         let keys = device_state.get_keys(); 
-        if keys.contains(&Keycode.BackSlash) {break}
-        if keys.contains(&Keycode.Comma) {
+        if keys.contains(&Keycode::BackSlash) {break}
+        if keys.contains(&Keycode::Comma) {
             settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().keyboard_input_enabled = false;
         } 
-        if keys.contains(&Keycode.Dot) {
+        if keys.contains(&Keycode::Dot) {
             settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().keyboard_input_enabled = true;
         }
-        if keys.contains(&Keycode.Semicolon) {
+        if keys.contains(&Keycode::Semicolon) {
             setup();
         }
     }
