@@ -24,8 +24,9 @@ pub const STAND_WEB_CONFIG: WebSocketConfig = WebSocketConfig{
 #[derive(Debug)]
 pub struct User{
     websocket: WebSocket<TcpStream>,
-    true_ip: String, // Change to enum later.
+    true_ip: String,
     pub commands: Vec<String>,
+    pub mouse_position: Option<(u16,u16)>
 }
 
 static USERS: Mutex<Vec<User>> = Mutex::new(Vec::new());

@@ -105,10 +105,7 @@ pub fn check_inputs() {
                 previous = commands;
             }
 
-            let settings = GLOBAL_SETTINGS.read().unwrap();
-            let keyboard_update_rate = (*settings).keyboard_update_rate;
-            drop(settings);
-            sleep(Duration::from_secs_f64(1f64 / keyboard_update_rate));
+            sleep(Duration::from_secs_f64(1f64 / (*GLOBAL_SETTINGS.read().unwrap()).keyboard_update_rate ));
         }
     });
 }

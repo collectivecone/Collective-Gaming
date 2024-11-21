@@ -1,11 +1,15 @@
 use std::thread;
 use std::time;
 use prompted::input;
+use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
+
 
 mod networking;
 mod screenreader;
 mod userinputs;
 mod setup;
+
+
 
 
 pub mod settings{
@@ -92,8 +96,18 @@ fn main() {
     userinputs::check_inputs();
 
     println!("set up done, server now running");
+    println!("hit \\ to emergency stop the program");
 
     loop {
-        thread::sleep(time::Duration::from_secs(100)); // temp so the main doesn't die. Will be replaced by an editable on the fly settings thing later
+        thread::sleep(time::Duration::from_millis(100));
+        let device_state = DeviceState::new();
+        if device_state.get_keys().contains(&Keycode.BackSlash) {
+            break
+
+
+        }
+
+
+
     }
 }
