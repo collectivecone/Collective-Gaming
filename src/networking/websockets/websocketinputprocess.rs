@@ -5,6 +5,30 @@ use serde_json::Value;
 use super::User;
 use super::USERS;
 
+fn register_mouse_change(user: &mut User, dict: serde_json::Map<String,Value>) {
+    let mut mousex = 0;
+    let mut mousey = 0;
+
+    if let Some(value) = dict.get("X") {
+        if let Value::Number(num) = value {
+            if let Some(number) = num.as_u64() {
+                mousex = number as u16;
+            } else {return;}
+        } else {return;}
+    } else {return;}
+
+    if let Some(value) = dict.get("Y") {
+        if let Value::Number(num) = value {
+            if let Some(number) = num.as_u64() {
+                mousey = number as u16;
+            } else {return;}
+        } else {return;}
+    } else {return;}
+
+
+
+    user.mouse_position = Some((mousex,mousey));
+}
 
 fn register_user_controls(user: &mut User, dict: serde_json::Map<String,Value>) {
     let key: &String;
@@ -50,6 +74,8 @@ fn process_user_web_input(user:&mut User,msg: tungstenite::Message ) {
                     if let Value::String(input_type) = input_type {
                         if input_type == "Control" {
                             register_user_controls(user,dict);
+                        } else if input_type == "Mouse" {
+                            register_mouse_change(user, dict);
                         }
                     }
                 }
