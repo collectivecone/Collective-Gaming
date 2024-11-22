@@ -89,6 +89,11 @@ fn setup() {
         settings.ignore_multiple_connections_per_ip = true;
     }
     drop(settings_guard);
+
+    println!("");
+    println!("hit \\ to emergency stop the program");
+    println!("hit , and . to toggle between input being off or on");
+    println!("hit ; to edit settings (note that this doesn't work for keys being changed or anything like that yet, server settings can be changed however including ratio to press)");
 }
 
 fn main() {
@@ -100,9 +105,6 @@ fn main() {
     userinputs::check_inputs();
 
     println!("set up done, server now running");
-    println!("hit \\ to emergency stop the program");
-    println!("hit , and . to toggle between input being off or on");
-    println!("hit ; to toggle between input being off or on");
 
     loop {
         thread::sleep(time::Duration::from_millis(100));
