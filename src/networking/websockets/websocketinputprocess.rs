@@ -6,8 +6,12 @@ use super::User;
 use super::USERS;
 
 fn register_mouse_change(user: &mut User, dict: serde_json::Map<String,Value>) {
-    let mut mousex = 0;
-    let mut mousey = 0;
+    let mousex;
+    let mousey;
+
+    println!("{:?}",dict);
+
+    user.mouse_position = None;
 
     if let Some(value) = dict.get("X") {
         if let Value::Number(num) = value {
@@ -15,7 +19,7 @@ fn register_mouse_change(user: &mut User, dict: serde_json::Map<String,Value>) {
                 mousex = number as u16;
             } else {return;}
         } else {return;}
-    } else {return;}
+    } else { return;}
 
     if let Some(value) = dict.get("Y") {
         if let Value::Number(num) = value {
@@ -72,6 +76,7 @@ fn process_user_web_input(user:&mut User,msg: tungstenite::Message ) {
             match input_type_option {
                 Some(input_type) => {
                     if let Value::String(input_type) = input_type {
+                        println!("{}",input_type);
                         if input_type == "Control" {
                             register_user_controls(user,dict);
                         } else if input_type == "Mouse" {
@@ -97,7 +102,7 @@ pub fn read_all_user_sends() {
                }
                Err(e) => {
                  if e.to_string() == "Trying to work with closed connection" {
-                     to_delete.push(i); println!("os error");
+                     to_delete.push(i);
                 } 
                 break;
             }

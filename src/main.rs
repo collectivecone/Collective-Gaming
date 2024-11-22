@@ -1,8 +1,9 @@
 use std::thread;
 use std::time;
 use prompted::input;
-use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
+use device_query::{DeviceQuery, DeviceState, Keycode};
 
+use captrs::Capturer;
 
 mod networking;
 mod screenreader;
@@ -36,12 +37,12 @@ pub mod settings{
 
         pub skip_client_keyboard_cycle: u32,
         pub ratio_for_press: f64,
-        pub screen_size: (u32,u32),
+        pub screen_size: (u16,u16),
 
         pub ignore_multiple_connections_per_ip: bool,
         pub local_server: bool,
 
-        pub keyboard_input_enabled: bool
+        pub keyboard_input_enabled: bool,
     }
 }
 
@@ -88,6 +89,9 @@ fn setup() {
     if input!("ignore multiple connections per ip (Y/N)") == "Y" {
         settings.ignore_multiple_connections_per_ip = true;
     }
+
+
+
     drop(settings_guard);
 
     println!("");
@@ -107,7 +111,7 @@ fn main() {
     println!("set up done, server now running");
 
     loop {
-        thread::sleep(time::Duration::from_millis(100));
+        thread::sleep(time::Duration::from_millis(25));
         let device_state = DeviceState::new();
         let keys = device_state.get_keys(); 
         if keys.contains(&Keycode::BackSlash) {break}

@@ -1,11 +1,29 @@
 use std::thread::{spawn,sleep};
 use std::time::Duration;
-use enigo::{self, Direction, Keyboard};
+use device_query::MousePosition;
+use enigo::{self, Direction, Keyboard, Mouse,Coordinate};
 use std::ops::Deref;
 
 use crate::settings::GLOBAL_SETTINGS;
 use crate::networking::websockets;
 use crate::networking::websockets::User;
+
+fn user_inputs_mouse_positions(users: &Vec<User>) -> (u16,u16) {
+    let mut total_mouse_position: (u32,u32) = (0,0);
+    let mut total_users_with_mouses: u32 = 0;
+    for user in users {
+        if let Some((mousex,mousey)) = user.mouse_position {
+            total_users_with_mouses += 1;
+        
+
+            total_mouse_position.0 += mousex as u32 ;
+            total_mouse_position.1 += mousey as u32;
+        }
+    }
+    if total_users_with_mouses == 0 {return (0,0)}
+
+    return ((total_mouse_position.0 / total_users_with_mouses) as u16,(total_mouse_position.1 / total_users_with_mouses) as u16 ) ;
+}
 
 fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Vec<(String,f64)>) {
     let total_users = users.len() as f64;
@@ -38,6 +56,19 @@ fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Ve
     return (keys_pressing,keys_ratios)
 }
 
+fn set_mouse_inputs(mouse_position: (u16,u16) ,controller: &mut enigo::Enigo) {
+    let screen_size = controller.main_display().unwrap();
+
+    println!("{:?}",mouse_position);
+
+    let x = ((mouse_position.0 as f32) / (65536 as f32) * (screen_size.0 as f32)) as i32;
+    let y = ((mouse_position.1 as f32) / (65536 as f32) * (screen_size.1 as f32)) as i32;
+
+
+
+    controller.move_mouse(x, y, Coordinate::Abs);
+}
+
 fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_inputs: Vec<(String,bool)>,controller: &mut enigo::Enigo) {
     for (i,(key,bool)) in keyboard_inputs.iter().enumerate() {
         let (_,previous) = previous_keyboard_inputs.get(i).unwrap();
@@ -56,8 +87,6 @@ fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_in
 
             _ = controller.key(enigo::Key::Unicode(char), command_type);
         }
-
-       
     }
 }
 
@@ -98,8 +127,11 @@ pub fn check_inputs() {
             let user_count = user_vec.len();
             if user_count > 0 {
                 let (commands,key_ratios,) = user_inputs_into_keyboard_inputs(user_vec);
+                let mouseposition = user_inputs_mouse_positions(user_vec);
+                println!("{} {}", mouseposition.0, mouseposition.1);
                 drop(guard);
                 if (*GLOBAL_SETTINGS.read().unwrap()).keyboard_input_enabled {
+                    set_mouse_inputs(mouseposition,&mut controller);
                     set_keyboard_inputs(&commands,previous,&mut controller);
                 }
                 send_keyboard_data_to_client(user_count,key_ratios);

@@ -111,10 +111,19 @@
         }
 
         function sendMouseInput(event) {
-          let mousex = event.pageX - document.getElementById("canvas").getBoundingClientRect().x;
+          let bounding = document.getElementById("canvas").getBoundingClientRect()
+          let mousex = Math.floor((event.pageX - bounding.x) / (bounding.right - bounding.x) * 65536);
+          let mousey = Math.floor((event.pageY - bounding.y) / (bounding.bottom - bounding.y) * 65536);
 
-          let mousey = event.pageY - document.getElementById("canvas").getBoundingClientRect().y;
-          let json = `{"Invoke_Type": "Mouse", X: "${mousex}", Y: "${mousey}" }`;
+          let json;
+          if (mousex > 0 && mousey > 0 && mousex <= 65536 && mousey <= 65536) {
+            json = `{"Invoke_Type": "Mouse", "X": ${mousex}, "Y": ${mousey}}`;
+          } else {
+            json = `{"Invoke_Type": "Mouse"}`;
+          }
+          console.log(mousex + "," + mousey);
+         
+          console.log(json);
           socket.send(json);
         }
 
