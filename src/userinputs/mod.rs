@@ -1,6 +1,5 @@
 use std::thread::{spawn,sleep};
 use std::time::Duration;
-use device_query::MousePosition;
 use enigo::{self, Direction, Keyboard, Mouse,Coordinate};
 use std::ops::Deref;
 
@@ -66,7 +65,7 @@ fn set_mouse_inputs(mouse_position: (u16,u16) ,controller: &mut enigo::Enigo) {
 
 
 
-    controller.move_mouse(x, y, Coordinate::Abs);
+    _ = controller.move_mouse(x, y, Coordinate::Abs);
 }
 
 fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_inputs: Vec<(String,bool)>,controller: &mut enigo::Enigo) {
@@ -128,11 +127,15 @@ pub fn check_inputs() {
             if user_count > 0 {
                 let (commands,key_ratios,) = user_inputs_into_keyboard_inputs(user_vec);
                 let mouseposition = user_inputs_mouse_positions(user_vec);
-                println!("{} {}", mouseposition.0, mouseposition.1);
                 drop(guard);
-                if (*GLOBAL_SETTINGS.read().unwrap()).keyboard_input_enabled {
-                    set_mouse_inputs(mouseposition,&mut controller);
-                    set_keyboard_inputs(&commands,previous,&mut controller);
+                if (*GLOBAL_SETTINGS.read().unwrap()).cloud_input_enabled {
+                    if (*GLOBAL_SETTINGS.read().unwrap()).mouse_input_enabled {
+                        set_mouse_inputs(mouseposition,&mut controller);
+                    }
+                    if (*GLOBAL_SETTINGS.read().unwrap()).keyboard_input_enabled {
+                        set_keyboard_inputs(&commands,previous,&mut controller);
+                    }
+                 
                 }
                 send_keyboard_data_to_client(user_count,key_ratios);
                

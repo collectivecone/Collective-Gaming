@@ -3,8 +3,6 @@ use std::time;
 use prompted::input;
 use device_query::{DeviceQuery, DeviceState, Keycode};
 
-use captrs::Capturer;
-
 mod networking;
 mod screenreader;
 mod userinputs;
@@ -29,6 +27,9 @@ pub mod settings{
         local_server: false,
 
         keyboard_input_enabled: true,
+        mouse_input_enabled: false,
+
+        cloud_input_enabled: true,
     } );
     pub struct SettingsStruct {
         pub keys: Vec<String>,
@@ -43,6 +44,9 @@ pub mod settings{
         pub local_server: bool,
 
         pub keyboard_input_enabled: bool,
+        pub mouse_input_enabled: bool,
+
+        pub cloud_input_enabled: bool,
     }
 }
 
@@ -82,12 +86,28 @@ fn setup() {
         settings.keyboard_update_rate = keyboard_update_rate
     }
 
-    if input!("is local server (Y/N)") == "Y" {
-        settings.local_server = true;
+    match (input!("Is local server (Y/N)").to_lowercase()).as_str() {
+        "y" => {settings.local_server = true},
+        "n" => {settings.local_server = false},
+        _ => {},
     }
 
-    if input!("ignore multiple connections per ip (Y/N)") == "Y" {
-        settings.ignore_multiple_connections_per_ip = true;
+    match (input!("Ignore multiple connections per ip (Y/N)").to_lowercase()).as_str() {
+        "y" => {settings.ignore_multiple_connections_per_ip = true},
+        "n" => {settings.ignore_multiple_connections_per_ip = false},
+        _ => {},
+    }
+
+    match (input!("Keyboard Inputs (Y/N)").to_lowercase()).as_str() {
+        "y" => {settings.keyboard_input_enabled = true},
+        "n" => {settings.keyboard_input_enabled = false},
+        _ => {},
+    }
+
+    match (input!("Mouse Input (Y/N)").to_lowercase()).as_str() {
+        "y" => {settings.mouse_input_enabled = true},
+        "n" => {settings.mouse_input_enabled = false},
+        _ => {},
     }
 
 
@@ -116,10 +136,10 @@ fn main() {
         let keys = device_state.get_keys(); 
         if keys.contains(&Keycode::BackSlash) {break}
         if keys.contains(&Keycode::Comma) {
-            settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().keyboard_input_enabled = false;
+            settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().cloud_input_enabled = false;
         } 
         if keys.contains(&Keycode::Dot) {
-            settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().keyboard_input_enabled = true;
+            settings::GLOBAL_SETTINGS.write().as_deref_mut().unwrap().cloud_input_enabled = true;
         }
         if keys.contains(&Keycode::Semicolon) {
             setup();
