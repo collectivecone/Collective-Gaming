@@ -99,6 +99,8 @@
         previous_screen_bytes = new Uint8ClampedArray();
         mouseX = 0
         mouseY = 0
+        Keyboard_Enabled = false,
+        Mouse_Enabled = false,
   
   			window.onload = function() {
           WebSockets()
@@ -110,84 +112,72 @@
           socket.send(json);
         }
 
-        function sendMouseInput(event) {
-          let bounding = document.getElementById("canvas").getBoundingClientRect()
-          let mousex = Math.floor((event.pageX - bounding.x) / (bounding.right - bounding.x) * 65536);
-          let mousey = Math.floor((event.pageY - bounding.y) / (bounding.bottom - bounding.y) * 65536);
 
-          let json;
-          if (mousex > 0 && mousey > 0 && mousex <= 65536 && mousey <= 65536) {
-            json = `{"Invoke_Type": "Mouse", "X": ${mousex}, "Y": ${mousey}}`;
-          } else {
-            json = `{"Invoke_Type": "Mouse"}`;
-          }
-          console.log(mousex + "," + mousey);
-         
-          console.log(json);
-          socket.send(json);
-        }
 
         function intalising(json,socket) {
           buttonArea = document.getElementById("ButtonArea")
-              for (key of json["Keys"])  {
+          for (key of json["Keys"])  {
 
-                const localkey = key
+            const localkey = key
 
-                button = document.createElement("button")
-                button.id = `${localkey}ParentButton`
-                button.className = "button"
+            button = document.createElement("button")
+            button.id = `${localkey}ParentButton`
+            button.className = "button"
 
-                let div = document.createElement("div");
-                div.id = `${localkey}ButtonStyle`
-                div.className = "button__progress"
- 
-
-                let collisionbox = document.createElement("div"); // This is for button collision
-                collisionbox.id = `yea`
-                collisionbox.className = "button__progress"
-                collisionbox.style.opacity = 0;
-
-                let span = document.createElement("span");
-                span.id = `${localkey}ButtonText`
-                span.className = "button__text"
-                span.textContent = key
-
-              
-                button.appendChild(div)
-                button.appendChild(span)
-                button.appendChild(collisionbox)
-               
-                buttonArea.appendChild(button)
+            let div = document.createElement("div");
+            div.id = `${localkey}ButtonStyle`
+            div.className = "button__progress"
 
 
-                button.onmousedown = function() {
-                  if (is_touch_enabled() == false) { sendKeyInput(localkey,true)}
-                };
-              
-                button.onmouseup = function() {
-                  if (is_touch_enabled() == false) { sendKeyInput(localkey,false)}
-                }; 
+            let collisionbox = document.createElement("div"); // This is for button collision
+            collisionbox.id = `yea`
+            collisionbox.className = "button__progress"
+            collisionbox.style.opacity = 0;
 
-                collisionbox.onmouseout = function() {
-                  sendKeyInput(localkey,false)
-                }; 
+            let span = document.createElement("span");
+            span.id = `${localkey}ButtonText`
+            span.className = "button__text"
+            span.textContent = key
 
-                button.onpointerdown = function() {
-                  sendKeyInput(localkey,true)
-                };
+          
+            button.appendChild(div)
+            button.appendChild(span)
+            button.appendChild(collisionbox)
+            
+            buttonArea.appendChild(button)
 
-                button.onpointerup = function() {
-                  sendKeyInput(localkey,false)
-                };
 
-                keys_used.push(key);
-              }
+            button.onmousedown = function() {
+              if (is_touch_enabled() == false) { sendKeyInput(localkey,true)}
+            };
+          
+            button.onmouseup = function() {
+              if (is_touch_enabled() == false) { sendKeyInput(localkey,false)}
+            }; 
+
+            collisionbox.onmouseout = function() {
+              sendKeyInput(localkey,false)
+            }; 
+
+            button.onpointerdown = function() {
+              sendKeyInput(localkey,true)
+            };
+
+            button.onpointerup = function() {
+              sendKeyInput(localkey,false)
+            };
+
+            keys_used.push(key);
+          }
+
+          Keyboard_Enabled = json["Keyboard_Enabled"]
+          Mouse_Enabled = json["Mouse_Enabled"]
         }
 
         document.addEventListener('keydown', pressKey);
         function pressKey(event) { 
           let key = event.key
-          if (event.repeat == false) {
+          if (event.repeat == false && Keyboard_Enabled) {
             for (existing_key of json["Keys"])  { 
             if (existing_key == key) {
               sendKeyInput(key,true)
@@ -199,7 +189,7 @@
         document.addEventListener('keyup', releaseKey);
         function releaseKey(event) { 
           let key = event.key
-          if (event.repeat == false) {
+          if (event.repeat == false && Keyboard_Enabled) {
             for (existing_key of json["Keys"])  { 
               if (existing_key == key) {
                 sendKeyInput(key,false)
@@ -209,6 +199,24 @@
         }
 
         document.onmousemove = sendMouseInput
+        function sendMouseInput(event) {
+          if (Mouse_Enabled) {
+            let bounding = document.getElementById("canvas").getBoundingClientRect()
+            let mousex = Math.floor((event.pageX - bounding.x) / (bounding.right - bounding.x) * 65536);
+            let mousey = Math.floor((event.pageY - bounding.y) / (bounding.bottom - bounding.y) * 65536);
+
+            let json;
+            if (mousex > 0 && mousey > 0 && mousex <= 65536 && mousey <= 65536) {
+              json = `{"Invoke_Type": "Mouse", "X": ${mousex}, "Y": ${mousey}}`;
+            } else {
+              json = `{"Invoke_Type": "Mouse"}`;
+            }
+            console.log(mousex + "," + mousey);
+            
+            console.log(json);
+            socket.send(json);
+          }
+        }
 
 
         async function WebSockets() {
@@ -226,6 +234,9 @@
               console.log(string);
               json = JSON.parse(string)
               intalising(json,socket)
+
+
+
             } else if (message_type == 1) { // Monitor Update
               let list = turnIntoImageData(bytes) 
              

@@ -15,7 +15,11 @@ use super::STAND_WEB_CONFIG;
 fn initalise_data(websocket: &mut tungstenite::WebSocket<TcpStream>) {
     let json = serde_json::json!({
         "Keys" : (GLOBAL_SETTINGS.read().unwrap()).keys.clone(),
+        "Keyboard_Enabled" : GLOBAL_SETTINGS.read().unwrap().keyboard_input_enabled ,
+        "Mouse_Enabled": GLOBAL_SETTINGS.read().unwrap().mouse_input_enabled ,
     });
+
+
 
     let string = json.to_string();
     let mut bytes = (*string.as_bytes()).to_vec();

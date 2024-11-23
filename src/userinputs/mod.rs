@@ -58,13 +58,9 @@ fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Ve
 fn set_mouse_inputs(mouse_position: (u16,u16) ,controller: &mut enigo::Enigo) {
     let screen_size = controller.main_display().unwrap();
 
-    println!("{:?}",mouse_position);
-
     let x = ((mouse_position.0 as f32) / (65536 as f32) * (screen_size.0 as f32)) as i32;
     let y = ((mouse_position.1 as f32) / (65536 as f32) * (screen_size.1 as f32)) as i32;
-
-
-
+    
     _ = controller.move_mouse(x, y, Coordinate::Abs);
 }
 
