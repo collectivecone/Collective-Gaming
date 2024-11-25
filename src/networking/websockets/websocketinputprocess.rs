@@ -27,8 +27,6 @@ fn register_mouse_change(user: &mut User, dict: serde_json::Map<String,Value>) {
         } else {return;}
     } else {return;}
 
-
-
     user.mouse_position = Some((mousex,mousey));
 }
 

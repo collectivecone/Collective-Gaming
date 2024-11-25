@@ -216,6 +216,21 @@
             console.log(json);
             socket.send(json);
           }
+          if (Keyboard_Enabled) {
+             let M1 = (event.buttons % 2) >= 1 
+             let M2 = (event.buttons % 4) >= 2 
+             let M3 = (event.buttons % 8) >= 4
+             console.log(M1 + M2 + M3);
+
+             let json1 = `{"Invoke_Type": "Control", "Key": "M1", "Pressing": ${M1}}`;
+             socket.send(json1);
+
+             let json2 = `{"Invoke_Type": "Control", "Key": "M2", "Pressing": ${M2}}`;
+             socket.send(json2);
+
+             let json3 = `{"Invoke_Type": "Control", "Key": "M3", "Pressing": ${M3}}`;
+             socket.send(json3);
+          }
         }
 
 

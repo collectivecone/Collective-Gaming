@@ -76,8 +76,13 @@ fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_in
        
         if key == "Space" {
          _ = controller.key(enigo::Key::Unicode(' '), command_type);
+        } else if key == "M1" {
+            controller.button(Button::Left, command_type)
+        } else if key == "M2" {
+            controller.button(Button::Right, command_type)
+        } else if key == "M3" {
+            controller.button(Button::Middle, command_type)
         } else {
-
             let char = key.to_lowercase().as_str().chars().next().unwrap();
 
             _ = controller.key(enigo::Key::Unicode(char), command_type);
