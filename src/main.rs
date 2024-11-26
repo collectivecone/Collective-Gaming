@@ -110,8 +110,7 @@ fn setup() {
         _ => {},
     }
 
-
-
+    networking::websockets::send_to_all_users(networking::websockets::adduser::initalise_data_message(),None);
     drop(settings_guard);
 
     println!("");

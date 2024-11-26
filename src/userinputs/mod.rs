@@ -110,7 +110,7 @@ fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>)
     }
 
     let msg = tungstenite::Message::Binary(bit_array);
-    websockets::send_to_all_users(msg,websockets::WebsocketDataTypes::SendingGlobalUserStates);
+    websockets::send_to_all_users(msg,Some(websockets::WebsocketDataTypes::SendingGlobalUserStates));
 }
 
 pub fn check_inputs() {

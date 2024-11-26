@@ -119,6 +119,10 @@
 
         function intalising(json,socket) {
           buttonArea = document.getElementById("ButtonArea")
+          
+          removeAllChildNodes(buttonArea);
+          keys_used = [];
+
           for (key of json["Keys"])  {
 
             const localkey = key
@@ -239,6 +243,8 @@
               let json = `{"Invoke_Type": "Control", "Key": "M3", "Pressing": ${M3}}`;
               socket.send(json);
              }
+
+             
             
 
              previousM1 = M1
@@ -329,8 +335,6 @@
           } 
           arr = previous_screen_bytes
 
-         // console.log(length);
-
           let i2 = 0 // Uncompressed Image Index
           let i = 4 // Compressed Image Index
           while (i < length) {
@@ -362,13 +366,10 @@
                 i+=1
               }
             } else {
-
               let skip = (Math.floor(bytes[i] / 2) % 128) + 1;
             
               i+= 1
               i2+= 4*skip
-
-
             }
           }
           arr = previous_screen_bytes
@@ -376,12 +377,9 @@
           return [arr, xsize, ysize]
         }
        
-
         function resizeTo(canvas,wantedxsize,wantedysize,xsize,ysize){
           var tempCanvas=document.createElement("canvas");
           var tctx=tempCanvas.getContext("2d");
-
-
 
           tempCanvas.width=xsize;
           tempCanvas.height=ysize;
@@ -394,22 +392,21 @@
         }
 
         function drawGameFrame(screenArray,xsize,ysize){ // takes  Uint8ClampedArray as the final thing
-        
-        
        		canvas = document.getElementById("canvas");
 					ctx = canvas.getContext("2d");
         	image = new ImageData(screenArray,xsize)
           ctx.putImageData(image, 0,0);
           resizeTo(canvas,document.documentElement.clientWidth * 0.5 + 260,document.documentElement.clientHeight * 0.5 + 120,xsize,ysize)
-      	  
-      //    resizeTo(canvas,VIDEOSCALE,false)
-        
         }
 
 
         
 
-
+        function removeAllChildNodes(parent) {
+          while (parent.firstChild) {
+              parent.removeChild(parent.firstChild);
+          }
+        }     
 
         function is_touch_enabled() {
           return ( 'ontouchstart' in window ) || 

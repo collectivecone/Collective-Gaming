@@ -32,25 +32,22 @@ pub struct User{
 static USERS: Mutex<Vec<User>> = Mutex::new(Vec::new());
 
 
-
-
 pub fn update_websockets_and_get_users() -> &'static Mutex<Vec<User>> {
     websocketinputprocess::read_all_user_sends();
 
     return &USERS;
 }
 
-pub fn send_to_all_users(mut msg: tungstenite::Message,websocket_data_type: WebsocketDataTypes) {
-
+pub fn send_to_all_users(mut msg: tungstenite::Message,websocket_data_type_op: Option<WebsocketDataTypes>) {
     let mut guard = USERS.lock().unwrap();
     let user_vec = guard.deref_mut();
 
-    if let tungstenite::Message::Binary(mut vec) = msg {
-        vec.insert( 0,websocket_data_type as u8);
-        msg = tungstenite::Message::Binary(vec);
+    if let Some(websocket_data_type) = websocket_data_type_op {
+        if let tungstenite::Message::Binary(mut vec) = msg {
+            vec.insert( 0,websocket_data_type as u8);
+            msg = tungstenite::Message::Binary(vec);
+        }
     }
-  //  println!("{:?}",user_vec);
-
     for user in user_vec.iter_mut() {
         _ = user.websocket.send(msg.clone());
     }

@@ -36,7 +36,7 @@ pub fn monitor_scanner() {
                  drop(guard);
 
                  let msg = tungstenite::Message::Binary(compressed_bytes);
-                 websockets::send_to_all_users(msg,websockets::WebsocketDataTypes::SendMonitorData);
+                 websockets::send_to_all_users(msg,Some(websockets::WebsocketDataTypes::SendMonitorData));
 
             
                

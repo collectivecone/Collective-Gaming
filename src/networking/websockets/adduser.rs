@@ -12,20 +12,23 @@ use super::WebsocketDataTypes;
 use super::USERS;
 use super::STAND_WEB_CONFIG;
 
-fn initalise_data(websocket: &mut tungstenite::WebSocket<TcpStream>) {
+pub fn initalise_data_message() -> (tungstenite::Message) {
     let json = serde_json::json!({
         "Keys" : (GLOBAL_SETTINGS.read().unwrap()).keys.clone(),
         "Keyboard_Enabled" : GLOBAL_SETTINGS.read().unwrap().keyboard_input_enabled ,
         "Mouse_Enabled": GLOBAL_SETTINGS.read().unwrap().mouse_input_enabled ,
     });
 
-
-
     let string = json.to_string();
     let mut bytes = (*string.as_bytes()).to_vec();
     bytes.insert(0, WebsocketDataTypes::Initialing as u8);
-   
-    _ = websocket.send(tungstenite::Message::binary(bytes));
+
+    return tungstenite::Message::binary(bytes)
+}
+
+fn initalise_data(websocket: &mut tungstenite::WebSocket<TcpStream>) {
+
+    _ = websocket.send(initalise_data_message());
 }
 
 fn send_inital_monitor_data(websocket: &mut tungstenite::WebSocket<TcpStream>) {

@@ -114,7 +114,5 @@ pub fn get_body_and_headers(stream: &mut TcpStream) -> Option<(RequestType, Stri
         return Some( (request, body, header ) )
       };
     } 
-    
-    
     return None
 }
