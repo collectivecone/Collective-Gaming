@@ -12,7 +12,7 @@ use super::WebsocketDataTypes;
 use super::USERS;
 use super::STAND_WEB_CONFIG;
 
-pub fn initalise_data_message() -> (tungstenite::Message) {
+pub fn initalise_data_message() -> tungstenite::Message {
     let json = serde_json::json!({
         "Keys" : (GLOBAL_SETTINGS.read().unwrap()).keys.clone(),
         "Keyboard_Enabled" : GLOBAL_SETTINGS.read().unwrap().keyboard_input_enabled ,

@@ -1,6 +1,6 @@
 use std::thread;
 use std::time;
-use prompted::input;
+
 use device_query::{DeviceQuery, DeviceState, Keycode};
 
 mod networking;

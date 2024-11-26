@@ -1,5 +1,11 @@
+
+
+use prompted::input;
+use crate::settings::GLOBAL_SETTINGS;
+use crate::networking::websockets;
+
 pub fn setup() {
-    let mut settings_guard = settings::GLOBAL_SETTINGS.write();
+    let mut settings_guard = GLOBAL_SETTINGS.write();
     let settings = (settings_guard.as_deref_mut()).unwrap();
     
     println!("Input a key you want to be pressable, enter nothing to break loop");
@@ -57,7 +63,7 @@ pub fn setup() {
         _ => {},
     }
 
-    networking::websockets::send_to_all_users(networking::websockets::adduser::initalise_data_message(),None);
+    websockets::send_to_all_users(websockets::adduser::initalise_data_message(),None);
     drop(settings_guard);
 
     println!("");
