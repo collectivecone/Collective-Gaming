@@ -99,6 +99,9 @@
         previous_screen_bytes = new Uint8ClampedArray();
         mouseX = 0
         mouseY = 0
+        previousM1 = false,
+        previousM2 = false,
+        previousM3 = false,
         Keyboard_Enabled = false,
         Mouse_Enabled = false,
   
@@ -222,14 +225,25 @@
              let M3 = (event.buttons % 8) >= 4
              console.log(M1 + M2 + M3);
 
-             let json1 = `{"Invoke_Type": "Control", "Key": "M1", "Pressing": ${M1}}`;
-             socket.send(json1);
+             if (M1 != previousM1) {
+              let json = `{"Invoke_Type": "Control", "Key": "M1", "Pressing": ${M1}}`;
+              socket.send(json);
+             }
+             
+             if (M2 != previousM2) {
+              let json = `{"Invoke_Type": "Control", "Key": "M2", "Pressing": ${M2}}`;
+              socket.send(json);
+             }
 
-             let json2 = `{"Invoke_Type": "Control", "Key": "M2", "Pressing": ${M2}}`;
-             socket.send(json2);
+             if (M3 != previousM3) {
+              let json = `{"Invoke_Type": "Control", "Key": "M3", "Pressing": ${M3}}`;
+              socket.send(json);
+             }
+            
 
-             let json3 = `{"Invoke_Type": "Control", "Key": "M3", "Pressing": ${M3}}`;
-             socket.send(json3);
+             previousM1 = M1
+             previousM2 = M2
+             previousM3 = M3
           }
         }
 
