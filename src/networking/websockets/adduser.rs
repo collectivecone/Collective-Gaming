@@ -39,7 +39,6 @@ fn send_inital_monitor_data(websocket: &mut tungstenite::WebSocket<TcpStream>) {
         let mut bytes = crate::screenreader::compression::compress_frame(previous_bytes, &mut Vec::new(), true);
         bytes.insert(0, WebsocketDataTypes::SendMonitorData as u8);
     
-       
         _ = websocket.send(tungstenite::Message::binary(bytes));
     }
 }
@@ -54,7 +53,6 @@ fn get_ip(headers: &HashMap<String,String>, stream : &TcpStream) -> Option<Strin
             Err(_) => return None
         }
     }
-    
 }
 
 fn is_multi_connecting(user_vec: &Vec<User>, ip_string: &String) -> bool {
@@ -66,7 +64,6 @@ fn is_multi_connecting(user_vec: &Vec<User>, ip_string: &String) -> bool {
         }
     }
     return false
-
 }
 
 pub fn add_new_user(stream: TcpStream,headers: HashMap<String,String>) {
@@ -80,7 +77,6 @@ pub fn add_new_user(stream: TcpStream,headers: HashMap<String,String>) {
             initalise_data(&mut websocket);
             send_inital_monitor_data(&mut websocket);
 
-    
             let user = User{
                 websocket: websocket,
                 commands: Vec::new(),
@@ -92,6 +88,4 @@ pub fn add_new_user(stream: TcpStream,headers: HashMap<String,String>) {
     };
 
     drop(guard);
-
-   
 }

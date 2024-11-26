@@ -124,7 +124,6 @@
           keys_used = [];
 
           for (key of json["Keys"])  {
-
             const localkey = key
 
             button = document.createElement("button")
@@ -244,9 +243,6 @@
               socket.send(json);
              }
 
-             
-            
-
              previousM1 = M1
              previousM2 = M2
              previousM3 = M3
@@ -256,7 +252,6 @@
 
         async function WebSockets() {
           socket = new WebSocket(window.location.href);
-
           socket.onmessage = async function(event) {
             
             bytes =  new Uint8Array(await event.data.arrayBuffer());
@@ -264,14 +259,11 @@
             bytes = bytes.subarray(1)
 
             if (message_type == 0) { // Intalising
-              
+
               string = new TextDecoder().decode(bytes)
               console.log(string);
               json = JSON.parse(string)
               intalising(json,socket)
-
-
-
             } else if (message_type == 1) { // Monitor Update
               let list = turnIntoImageData(bytes) 
              

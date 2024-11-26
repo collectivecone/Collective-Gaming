@@ -37,9 +37,6 @@ pub fn monitor_scanner() {
 
                  let msg = tungstenite::Message::Binary(compressed_bytes);
                  websockets::send_to_all_users(msg,Some(websockets::WebsocketDataTypes::SendMonitorData));
-
-            
-               
               }
               None => {} 
            }
@@ -49,7 +46,6 @@ pub fn monitor_scanner() {
            sleep(
               Duration::from_secs_f32(1f32 / (GLOBAL_SETTINGS.read().unwrap().fps)  ).saturating_sub(time_taken_for_read_frame)
            );
-
         }
     });
  }

@@ -40,7 +40,6 @@ pub fn compress_frame(data :Vec<u8>,previous_data: &Vec<u8>,ignore_previous_data
                 }
     
                 compressed_data.push(repeat * 2);
-                
                 continue    
             } 
         } else {

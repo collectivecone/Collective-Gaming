@@ -23,8 +23,6 @@ pub fn makebase() -> Vec<u8> {
 
 pub fn getmonitordata(capture:&mut Capturer) -> Option<Vec<u8>> {
     let (xsize, ysize) = (GLOBAL_SETTINGS.read().unwrap()).screen_size;
-   
-   
     let result = capture.capture_store_frame();
 
     match result {
@@ -35,10 +33,6 @@ pub fn getmonitordata(capture:&mut Capturer) -> Option<Vec<u8>> {
 
     let imageop = capture.get_stored_frame();
     let  image = imageop.unwrap();
-  //  match imageop {
-  //     Ok(t) => {image =  t;},
-   //    Err(_) => {return None}
-  //  }
 
     let (xscreen, yscreen) = capture.geometry();
  
@@ -50,7 +44,6 @@ pub fn getmonitordata(capture:&mut Capturer) -> Option<Vec<u8>> {
     screen_bytes.push((ysize / 256) as u8);
     screen_bytes.push((ysize % 256) as u8);
     
- 
     {
       let xscreen = xscreen as f32;
       let yscreen = yscreen as f32;
