@@ -15,7 +15,7 @@ fn user_inputs_mouse_positions(users: &Vec<User>) -> (u16,u16) {
             total_users_with_mouses += 1;
         
 
-            total_mouse_position.0 += mousex as u32 ;
+            total_mouse_position.0 += mousex as u32;
             total_mouse_position.1 += mousey as u32;
         }
     }
@@ -90,9 +90,10 @@ fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_in
     }
 }
 
-fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>) {
+fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>,mouse_position: (u16,u16)) {
     let settings = GLOBAL_SETTINGS.read().unwrap();
     let ratio_for_press = (*settings).ratio_for_press;
+    let mouse_enabled = settings.mouse_input_enabled;
     drop(settings);
 
     let mut bit_array: Vec<u8> = vec![];
@@ -100,6 +101,13 @@ fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>)
     bit_array.push(((user_count / (256 * 256 )) % 256) as u8);
     bit_array.push(((user_count / (256)) % 256) as u8);
     bit_array.push((user_count % 256) as u8);
+
+    if mouse_enabled {
+        bit_array.push((mouse_position.0 / 256) as u8);
+        bit_array.push((mouse_position.0 % 256) as u8);
+        bit_array.push((mouse_position.1 / 256) as u8);
+        bit_array.push((mouse_position.1 % 256) as u8);
+    }
 
     for (_,i) in key_ratios {
         if i < ratio_for_press {
@@ -138,7 +146,7 @@ pub fn check_inputs() {
                     }
                  
                 }
-                send_keyboard_data_to_client(user_count,key_ratios);
+                send_keyboard_data_to_client(user_count,key_ratios,mouseposition);
                
                 previous = commands;
             } else {drop(guard);}
