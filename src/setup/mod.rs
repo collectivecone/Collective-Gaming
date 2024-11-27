@@ -69,5 +69,5 @@ pub fn setup() {
     println!("");
     println!("hit \\ to emergency stop the program");
     println!("hit , and . to toggle between input being off or on");
-    println!("hit ; to edit settings (note that this doesn't work for keys being changed or anything like that yet, server settings can be changed however including ratio to press)");
+    println!("hit ; to edit settings (should effect client settings but I'm not actually that certain that it does)");
 }

@@ -24,26 +24,26 @@ fn user_inputs_mouse_positions(users: &Vec<User>) -> (u16,u16) {
     return ((total_mouse_position.0 / total_users_with_mouses) as u16,(total_mouse_position.1 / total_users_with_mouses) as u16 ) ;
 }
 
-fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Vec<(String,f64)>) {
-    let total_users = users.len() as f64;
+fn user_inputs_into_keyboard_inputs(users: &Vec<User>) -> (Vec<(String,bool)>,Vec<(String,f32)>) {
+    let total_users = users.len() as f32;
 
     let settings = GLOBAL_SETTINGS.read().unwrap();
     let (valid_keys,ratio_for_press) = ((*settings).keys.clone(),(*settings).ratio_for_press);
     drop(settings);
 
-    let mut amounts: Vec<f64> = vec!(); for _ in valid_keys.clone() {amounts.push(0f64);}
+    let mut amounts: Vec<f32> = vec!(); for _ in valid_keys.clone() {amounts.push(0f32);}
     for user in users {
         for command in user.commands.iter() {
             for (i, entry) in valid_keys.clone() .iter().enumerate()  {
                 if entry == command {
-                    amounts[i] += 1f64;
+                    amounts[i] += 1f32;
                 }
             }
         }
     }
 
     let mut keys_pressing: Vec<(String,bool)> = vec!();
-    let mut keys_ratios: Vec<(String,f64)> = vec!();
+    let mut keys_ratios: Vec<(String,f32)> = vec!();
 
     for (i,amount) in amounts.iter().enumerate() {
         let key = valid_keys[i].clone() ;
@@ -90,7 +90,7 @@ fn set_keyboard_inputs(keyboard_inputs: &Vec<(String,bool)>,previous_keyboard_in
     }
 }
 
-fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>,mouse_position: (u16,u16)) {
+fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f32)>,mouse_position: (u16,u16)) {
     let settings = GLOBAL_SETTINGS.read().unwrap();
     let ratio_for_press = (*settings).ratio_for_press;
     let mouse_enabled = settings.mouse_input_enabled;
@@ -111,9 +111,9 @@ fn send_keyboard_data_to_client(user_count: usize,key_ratios: Vec<(String,f64)>,
 
     for (_,i) in key_ratios {
         if i < ratio_for_press {
-            bit_array.push(((i / ratio_for_press)  * 128f64) as u8);
+            bit_array.push(((i / ratio_for_press)  * 128f32) as u8);
         } else {
-            bit_array.push(((((i - ratio_for_press) / (1f64 - ratio_for_press))  * 127f64) as u8) + 128u8);
+            bit_array.push(((((i - ratio_for_press) / (1f32 - ratio_for_press))  * 127f32) as u8) + 128u8);
         }
     }
 

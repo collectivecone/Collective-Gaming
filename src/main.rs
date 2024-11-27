@@ -31,10 +31,10 @@ pub mod settings{
     pub struct SettingsStruct {
         pub keys: Vec<String>,
         pub fps: f32,
-        pub keyboard_update_rate: f64,
+        pub keyboard_update_rate: f32,
 
         pub skip_client_keyboard_cycle: u32,
-        pub ratio_for_press: f64,
+        pub ratio_for_press: f32,
         pub screen_size: (u16,u16),
 
         pub ignore_multiple_connections_per_ip: bool,
@@ -50,7 +50,7 @@ pub mod settings{
 
 fn main() {
 
-    setup::setup();
+    setup::setup(); // pauses main loop till set up is done
 
     screenreader::monitor_scanner();
     networking::http_handler();

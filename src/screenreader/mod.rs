@@ -23,7 +23,6 @@ pub fn monitor_scanner() {
         previous_bytes.clear(); previous_bytes.extend_from_slice(&reader::makebase());
         let mut capture = Capturer::new(0).unwrap();
         drop(guard);
-
         loop {
            let before = Instant::now();
            let bytes = reader::getmonitordata(&mut capture);
